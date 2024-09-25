@@ -46,3 +46,19 @@
     margin-top: 2em;
   }
 }
+
+.about__contact {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center align the elements */
+}
+
+.resume-container {
+  margin-bottom: 1em; /* Add margin below the resume button */
+}
+
+.social-container {
+  display: flex;
+  gap: 0.8em; /* Adjust the gap between the icons */
+  justify-content: center; /* Center align the icons */
+}

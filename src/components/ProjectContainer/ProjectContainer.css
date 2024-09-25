@@ -8,7 +8,9 @@
 
 .project:hover {
   transform: translateY(-7px);
-}
+  /* background-color: var(--clr-bg-hover); /* Use the hover background color variable */
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 24px; /* Increase shadow depth on hover */
+} */
 
 .project__description {
   margin-top: 1em;

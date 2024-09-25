@@ -9,4 +9,30 @@
 
 .skills__list-item {
   margin: 0.5em;
+  padding: 0.75em 1.5em;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background-color: var(--clr-bg-alt); /* Matches background-alt color */
+  color: var(--clr-fg); /* Matches foreground color */
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect for both light and dark themes */
+.skills__list-item:hover {
+  background-color: var(--clr-primary); /* Use primary color for hover */
+  color: var(--clr-bg); /* Text becomes background color on hover */
+  transform: translateY(-4px); /* Slight lift effect on hover */
+}
+
+/* For dark theme, ensure text color changes on hover */
+.dark .skills__list-item:hover {
+  background-color: #ff7b70; /* Lighter orange shade for dark theme */
+  color: #1c1c1c; /* Darker text color */
+}
+
+/* For light theme, ensure text color changes on hover */
+.light .skills__list-item:hover {
+  background-color: #5a9fd6; /* Lighter blue shade for light theme */
+  color: #ffffff; /* White text color */
 }
