@@ -3,459 +3,280 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Loss Does Not See the Basis, but Adam Does</title>
-<meta name="description" content="A gauge-symmetry criterion that separates the optimizers which inherit gradient descent's low-rank implicit bias from those that structurally cannot. Nine optimizers, two clusters, no overlap.">
+<title>Devender Singh</title>
+<meta name="description" content="Devender Singh — Honours Computer Science undergraduate at Memorial University of Newfoundland, working on optimization for machine learning: symmetry, implicit bias, and which solutions an optimizer selects.">
 
-<meta property="og:type" content="article">
-<meta property="og:title" content="The Loss Does Not See the Basis, but Adam Does">
-<meta property="og:description" content="A single symmetry — the orthogonal gauge of factored models — separates the optimizers that can inherit gradient flow's low-rank bias from the ones that structurally cannot.">
-<meta property="og:image" content="https://idevender.github.io/static/zoo_map.png">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Devender Singh">
+<meta property="og:description" content="Honours CS undergraduate at Memorial University of Newfoundland. Optimization for machine learning: symmetry, implicit bias, and which solutions an optimizer selects.">
 <meta property="og:url" content="https://idevender.github.io/">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Loss Does Not See the Basis, but Adam Does">
-<meta name="twitter:description" content="Nine optimizers. Two clusters. No overlap.">
-<meta name="twitter:image" content="https://idevender.github.io/static/zoo_map.png">
-
-<meta name="citation_title" content="The Loss Does Not See the Basis, but Adam Does">
-<meta name="citation_author" content="Singh, Devender">
-<meta name="citation_publication_date" content="2026/08/05">
-<meta name="citation_arxiv_id" content="2608.05136">
-<meta name="citation_abstract_html_url" content="https://arxiv.org/abs/2608.05136">
-<meta name="citation_pdf_url" content="https://arxiv.org/pdf/2608.05136">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Devender Singh">
+<meta name="twitter:description" content="Honours CS undergraduate at Memorial University of Newfoundland. Optimization for machine learning.">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23147db8'/%3E%3Cpath d='M22 70 L50 30 L78 70' stroke='white' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
-<link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
-  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
-};
-(function(){ // set theme before paint, no flash
-  try{
-    var t = localStorage.getItem('theme');
-    if(!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', t);
-  }catch(e){}
-})();
-</script>
-<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
 <style>
-/* ---- template overrides, in the spirit of the Nerfies index.css ---- */
-body { font-family: 'Noto Sans', sans-serif; }
-.publication-title { font-family: 'Google Sans', 'Noto Sans', sans-serif; }
-.publication-authors { font-family: 'Google Sans', 'Noto Sans', sans-serif; }
-.author-block { display: inline-block; }
-.publication-links { margin-top: 1.6rem; }
-.publication-links .link-block { margin: 0 .18rem; }
-.title.is-3 { font-family: 'Google Sans', 'Noto Sans', sans-serif; }
-.hero-body { padding-top: 4rem; padding-bottom: 2rem; }
-.section { padding: 2.5rem 1.5rem; }
+  :root {
+    --ink: #2c2c2c;
+    --muted: #6b6b6b;
+    --link: #147db8;
+    --rule: #e2e2e2;
+  }
 
-figure.fig { margin: 0 0 .5rem; }
-/* SVG has an intrinsic size from the source PDF; width:100% makes it fill the
-   column and, being vector, it stays sharp at any scale factor. */
-figure.fig img { display: block; margin: 0 auto; width: 100%; max-width: 100%; height: auto; }
-.fig-frame { border: 1px solid #e6e6e6; border-radius: 6px; padding: 1rem; background: #fff; overflow-x: auto; }
-figure.fig figcaption { font-size: .92rem; margin-top: .9rem; text-align: justify; line-height: 1.6; }
+  * { box-sizing: border-box; }
 
-hr.sep { background-color: #ededed; height: 1px; margin: 0 auto; max-width: 60rem; }
-table.zoo { font-size: .88rem; }
-table.zoo td, table.zoo th { vertical-align: middle; white-space: nowrap; }
-table.zoo td.num { font-variant-numeric: tabular-nums; text-align: right; }
-.tag-equi { color: #147db8; font-weight: 700; }
-.tag-coord { color: #d76912; font-weight: 700; }
-.tablenote { font-size: .85rem; color: #7a7a7a; margin-top: .6rem; }
-.table-scroll { overflow-x: auto; }
-pre.bib { background: #f5f5f5; border-radius: 6px; font-size: .82rem; }
-mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+  body {
+    margin: 0;
+    font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    color: var(--ink);
+    background: #fff;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
 
-.contactline { font-size: 1.02rem; }
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 4rem 1.75rem 5rem;
+  }
 
-/* ---- theme toggle ---- */
-#themebtn {
-  position: fixed; top: 1rem; right: 1rem; z-index: 60;
-  width: 2.4rem; height: 2.4rem; border-radius: 50%;
-  border: 1px solid #dbdbdb; background: #fff; color: #4a4a4a;
-  cursor: pointer; font-size: .95rem; line-height: 1;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .2s, border-color .2s, color .2s;
-}
-#themebtn:hover { border-color: #b5b5b5; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
 
-/* ---- dark mode ---- */
-[data-theme="dark"] body,
-[data-theme="dark"] html { background-color: #12151a; }
-[data-theme="dark"] body { color: #d5dae2; }
-/* Bulma's .hero.is-light also forces color:rgba(0,0,0,.7) — override both. */
-[data-theme="dark"] .hero.is-light,
-[data-theme="dark"] .hero.is-light .publication-authors,
-[data-theme="dark"] .hero.is-light .author-block { background-color: #12151a; color: #d5dae2; }
-[data-theme="dark"] .title,
-[data-theme="dark"] .publication-title { color: #eef1f6 !important; }
-[data-theme="dark"] .subtitle,
-[data-theme="dark"] .content,
-[data-theme="dark"] .content p,
-[data-theme="dark"] figure.fig figcaption { color: #c2c9d4; }
-[data-theme="dark"] .has-text-grey { color: #8e98a6 !important; }
-[data-theme="dark"] a { color: #6cb6e8; }
-[data-theme="dark"] .publication-authors a { color: #6cb6e8; }
-[data-theme="dark"] hr.sep { background-color: #262c36; }
-[data-theme="dark"] .footer { background-color: #171b22; color: #c2c9d4; }
-[data-theme="dark"] .footer .content { color: #c2c9d4; }
-[data-theme="dark"] pre.bib { background: #1b2029; color: #d5dae2; }
-[data-theme="dark"] #themebtn { background: #1b2029; border-color: #2e3644; color: #d5dae2; }
-[data-theme="dark"] #themebtn:hover { border-color: #4a5566; }
-/* buttons invert so they stay the emphasis element */
-[data-theme="dark"] .button.is-dark { background-color: #eef1f6; color: #12151a; }
-[data-theme="dark"] .button.is-dark:hover { background-color: #ffffff; color: #12151a; }
-/* tables */
-[data-theme="dark"] .table { background-color: transparent; color: #d5dae2; }
-[data-theme="dark"] .table th { color: #eef1f6; border-color: #2e3644; }
-[data-theme="dark"] .table td { border-color: #262c36; }
-[data-theme="dark"] .table.is-striped tbody tr:not(.is-selected):nth-child(even) { background-color: #1a1f27; }
-[data-theme="dark"] .tablenote { color: #8e98a6; }
-[data-theme="dark"] .tag-equi { color: #5aa9dd; }
-[data-theme="dark"] .tag-coord { color: #e8873c; }
-/* figures keep a light card so the plots stay true to the paper */
-[data-theme="dark"] .fig-frame { background: #f4f5f7; border-color: #2e3644; }
+  /* ---------- header ---------- */
+
+  .masthead {
+    display: flex;
+    align-items: center;
+    gap: 2.75rem;
+  }
+
+  .portrait {
+    flex: 0 0 auto;
+    width: 205px;
+    height: 205px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center 28%;
+  }
+
+  .who h1 {
+    font-size: 3.4rem;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    margin: 0 0 .55rem;
+    line-height: 1.05;
+  }
+
+  .who p {
+    margin: 0 0 .2rem;
+    font-weight: 300;
+    font-size: 1.06rem;
+    color: var(--ink);
+  }
+
+  .icons {
+    margin-top: .7rem;
+    display: flex;
+    gap: .85rem;
+    font-size: 1.28rem;
+  }
+  .icons a { color: var(--ink); }
+  .icons a:hover { color: var(--link); text-decoration: none; }
+
+  /* ---------- nav ---------- */
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: 2.6rem 0;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.2rem;
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+  }
+  nav a { color: var(--ink); }
+  nav a:hover { color: var(--link); text-decoration: none; }
+
+  /* ---------- sections ---------- */
+
+  section { padding-top: 1.2rem; }
+
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0 0 1.4rem;
+    letter-spacing: -0.3px;
+  }
+
+  section p { margin: 0 0 1.35rem; }
+
+  .news div { margin-bottom: .55rem; }
+  .news .date { font-weight: 600; }
+
+  .pub {
+    margin-bottom: 1.9rem;
+    padding-left: 1.1rem;
+    border-left: 3px solid var(--rule);
+  }
+  .pub .title { font-weight: 600; display: block; margin-bottom: .1rem; }
+  .pub .meta { color: var(--muted); font-size: .95rem; }
+  .pub .links { margin-top: .3rem; font-size: .95rem; }
+  .pub .links a { margin-right: .95rem; }
+
+  .note { color: var(--muted); }
+
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--rule);
+    font-size: .87rem;
+    color: var(--muted);
+  }
+
+  /* ---------- mobile ---------- */
+
+  @media (max-width: 660px) {
+    .wrap { padding: 2.5rem 1.25rem 3.5rem; }
+    .masthead { flex-direction: column; text-align: center; gap: 1.5rem; }
+    .portrait { width: 165px; height: 165px; }
+    .who h1 { font-size: 2.5rem; }
+    .icons { justify-content: center; }
+    nav { gap: 1.5rem; justify-content: center; }
+    h2 { font-size: 2rem; }
+  }
 </style>
 </head>
 <body>
 
-<button id="themebtn" aria-label="Toggle dark mode" title="Toggle dark mode"><i class="fas fa-moon"></i></button>
+<div class="wrap">
 
-<section class="hero is-light">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">
-            The Loss Does Not See the Basis,<br>but Adam Does
-          </h1>
-
-          <div class="is-size-5 publication-authors" style="margin-top:1.6rem">
-            <span class="author-block">Devender Singh</span>
-          </div>
-
-          <div class="is-size-6 publication-authors" style="margin-top:.5rem">
-            <a href="https://arxiv.org/abs/2608.05136">arXiv:2608.05136</a>
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2608.05136" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://github.com/idevender/loss-basis-adam" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="fab fa-github"></i></span>
-                  <span>Code</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="#bibtex" class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon"><i class="fas fa-quote-left"></i></span>
-                  <span>BibTeX</span>
-                </a>
-              </span>
-            </div>
-          </div>
-        </div>
+  <header class="masthead">
+    <img class="portrait" src="assets/devender.jpg" alt="Devender Singh">
+    <div class="who">
+      <h1>Devender Singh</h1>
+      <p>Honours BSc in Computer Science</p>
+      <p>Memorial University of Newfoundland</p>
+      <p>devenders [AT] mun.ca</p>
+      <div class="icons">
+        <a href="https://x.com/devendertwr" title="X" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+        <a href="https://www.linkedin.com/in/idevender" title="LinkedIn" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <a href="https://github.com/idevender" title="GitHub" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        <a href="mailto:devenders@mun.ca" title="Email" aria-label="Email"><i class="fas fa-envelope"></i></a>
       </div>
     </div>
-  </div>
-</section>
+  </header>
 
-<section class="section" style="padding-top:0">
-  <div class="container is-max-desktop">
-    <figure class="fig">
-      <div class="fig-frame">
-        <img src="static/zoo_map.svg" alt="Ground-truth recovery error for nine optimizers. The four gauge-equivariant methods fall between 0.000 and 0.286 in blue; the five coordinate-wise methods fall between 0.425 and 0.573 in vermilion, with an empty gap between the groups.">
-      </div>
-      <figcaption>
-        <b>Nine optimizers, two clusters, no overlap.</b> Ground-truth recovery on underdetermined
-        matrix sensing. All nine run to interpolation, so nothing here is explained by residual
-        training error. Every gauge-equivariant method lands at or below $0.286$; every
-        coordinate-wise one at or above $0.42$. The space between is unoccupied.
-      </figcaption>
-    </figure>
-  </div>
-</section>
+  <hr>
 
-<hr class="sep">
+  <nav>
+    <a href="#bio">Bio</a>
+    <a href="#news">News</a>
+    <a href="#publications">Publications</a>
+    <!-- <a href="#vita">Vita</a> -->
+  </nav>
 
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            Gradient descent on a factored model $W = UV^\top$ is implicitly biased toward low-rank
-            solutions, while Adam, starting from the same small initialization, is not. We trace the
-            difference to the gauge symmetry of the loss, its invariance under
-            $(U, V) \mapsto (UQ, VQ)$. Gradient flow's low-rank mechanism is available to an optimizer
-            only if that optimizer is gauge-equivariant, a condition necessary for the transfer but
-            not sufficient for low-rank recovery. Gradient descent, momentum, &ldquo;shared-scalar&rdquo;
-            Adam, Muon, and Shampoo satisfy it. Adam, RMSProp, and the other coordinate-wise methods do
-            not. A structure theorem characterizes the memoryless equivariant rules as exactly the
-            Gram-determined left preconditioners, and a transfer theorem carries gradient flow's
-            pathwise properties to common-scalar flows. We then sort nine update rules on
-            underdetermined matrix sensing by recovery error against the planted ground truth. A
-            one-parameter family from coordinate-wise to shared-scalar preconditioning restores the
-            bias monotonically, isolating anisotropy as the cause. A &ldquo;spectral schedule&rdquo;
-            reconciles two opposing reports about Muon: equal-rate updates recover exactly low-rank
-            targets but lose their edge as the spectral tail grows. In transformers, Adam separates two
-            gauge-equivalent initializations at the first step, where the equivariant optimizers stay
-            at float precision, and ends with the per-head invariants $W_Q^\top W_K$ $56\%$ apart in
-            relative Frobenius distance, a gap no per-head rotation can close. On two hyperspectral
-            datasets at matched training loss, gradient descent cuts held-out error by
-            $43$&ndash;$44\%$ at the lowest sampling density, and at lower effective rank. Basis choice
-            is therefore not a tuning detail but a decision about which interpolant the optimizer
-            selects.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  <hr>
 
-<hr class="sep">
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">The gauge</h2>
-    <div class="content has-text-centered">
-      <p>The objective $L(U,V) = f(UV^\top)$ is unchanged by</p>
-      <p>$$(U,V) \;\longmapsto\; (UQ,\; VQ), \qquad Q \in O(k),$$</p>
-      <p>
-        because rotating the latent bases alters neither $W = UV^\top$ nor any prediction.
-        The loss cannot see $Q$. The question is whether the optimizer can.
-      </p>
-    </div>
-  </div>
-</section>
-
-<hr class="sep">
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">The optimizer zoo</h2>
-    <div class="table-scroll">
-      <table class="table is-fullwidth is-striped is-narrow zoo">
-        <thead>
-          <tr>
-            <th>method</th><th class="has-text-right">recovery &darr;</th>
-            <th class="has-text-right">erank</th><th class="has-text-right">bal</th>
-            <th class="has-text-right">train loss</th><th>notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td><em>min-nuclear-norm</em></td><td class="num"><em>0.0335</em></td><td class="num"><em>3.30</em></td><td class="num">&mdash;</td><td class="num">&mdash;</td><td><em>convex reference</em></td></tr>
-          <tr><td colspan="6" class="tag-equi">gauge-equivariant</td></tr>
-          <tr><td>Muon</td><td class="num"><b>0.0000</b></td><td class="num">2.95</td><td class="num">1.65</td><td class="num">5.7e&minus;8</td><td>near-exact (6.8e&minus;6 unrounded)</td></tr>
-          <tr><td>GD</td><td class="num">0.1312</td><td class="num">4.51</td><td class="num">0.06</td><td class="num">6.5e&minus;8</td><td>Gunasekar anchor</td></tr>
-          <tr><td>scalar-Adam ($p{=}0$)</td><td class="num">0.2010</td><td class="num">5.43</td><td class="num">0.14</td><td class="num">3.5e&minus;8</td><td>equivariant; flow proxy</td></tr>
-          <tr><td>Shampoo</td><td class="num">0.2856</td><td class="num">6.95</td><td class="num">1.47</td><td class="num">4.5e&minus;8</td><td></td></tr>
-          <tr><td colspan="6" class="tag-coord">coordinate-wise</td></tr>
-          <tr><td>Lion</td><td class="num">0.4248</td><td class="num">10.58</td><td class="num">7.35</td><td class="num">8.0e&minus;8</td><td></td></tr>
-          <tr><td>signum</td><td class="num">0.4454</td><td class="num">7.83</td><td class="num">1.79</td><td class="num">6.5e&minus;8</td><td>low-rank-but-wrong</td></tr>
-          <tr><td>RMSProp</td><td class="num">0.5266</td><td class="num">12.80</td><td class="num">4.74</td><td class="num">6.0e&minus;8</td><td>needs decay</td></tr>
-          <tr><td>Adafactor</td><td class="num">0.5430</td><td class="num">10.72</td><td class="num">3.40</td><td class="num">5.6e&minus;8</td><td>factored diagonal still breaks it</td></tr>
-          <tr><td>Adam</td><td class="num">0.5734</td><td class="num">14.37</td><td class="num">5.37</td><td class="num">1.2e&minus;11</td><td>Wilson anchor</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="tablenote">
-      Matrix sensing, $40\times40$, rank-3 ground truth, no weight decay, three paired seeds, all runs
-      continued to interpolation. Recovery is $\|W - X^\ast\|_F/\|X^\ast\|_F$; <em>bal</em> is
-      $\|U^\top U - V^\top V\|_F$. The separation claim itself rests on the ten-seed ladder in the
-      appendix, where it holds at every size up to $n{=}256$.
+  <section id="bio">
+    <h2>Bio</h2>
+    <p>
+      Hi! I am an undergraduate in the Honours Computer Science program at
+      <a href="https://www.mun.ca/computerscience/">Memorial University of Newfoundland</a>.
+      I work on optimization for machine learning, asking how the symmetries of a model's loss
+      constrain which solutions an optimizer can select and what that implies for generalization.
+      In <a href="loss-basis-adam/"><em>The Loss Does Not See the Basis, but Adam Does</em></a> I turn
+      one such symmetry into a criterion that predicts which optimizers inherit gradient descent's
+      low-rank implicit bias and which structurally cannot. In earlier work with
+      <a href="https://www.math.mun.ca/~tksheel/">Tarun Sheel</a> I introduced
+      <a href="https://arxiv.org/abs/2604.06652"><em>FlowAdam</em></a>,
+      an optimizer that injects momentum along a geometry-aware flow.
     </p>
-  </div>
-</section>
-
-<hr class="sep">
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">The same gauge lives in attention heads</h2>
-    <figure class="fig">
-      <div class="fig-frame">
-        <img src="static/attention_gauge.svg" alt="Log-scale plot of relative logit distance versus training step. Adam's gauge twins jump four orders of magnitude at step one and saturate; SGD and scalar-Adam gauge twins stay at float noise; Muon's gauge and noise twins trace the same curve.">
-      </div>
-      <figcaption>
-        <b>Adam is basis-dependent in attention.</b> Each head's logits depend on $W_Q$ and $W_K$ only
-        through $W_Q^\top W_K$, so each head carries the same symmetry. Two transformers are
-        initialized as the <em>same function</em> in different bases. Adam's gauge twins split at step
-        one, four orders of magnitude above its own noise twin, then saturate; the head invariants
-        finish $56\%$ apart, a gap no per-head rotation can close. SGD and scalar-Adam stay at float
-        noise. For Muon the gauge and noise twins trace one curve, identifying its separation as
-        numerical chaos in the matrix sign rather than basis dependence.
-      </figcaption>
-    </figure>
-  </div>
-</section>
-
-<hr class="sep">
-
-<section class="section">
-  <div class="container is-max-widescreen">
-    <h2 class="title is-3 has-text-centered">Isolating preconditioner anisotropy with a dial</h2>
-    <figure class="fig">
-      <div class="fig-frame">
-        <img src="static/algorithm.svg" alt="Algorithm 1, Adam-p, the preconditioner-anisotropy dial. Pseudocode in which a pooled scalar s-bar is computed as the square root of the mean of the bias-corrected second moments over both factors, and the denominator D-theta interpolates between the per-coordinate and shared-scalar forms with exponent p.">
-      </div>
-      <figcaption style="max-width:58rem;margin-left:auto;margin-right:auto">
-        <b>Algorithm 1, reproduced from the paper.</b> Only the denominator moves with $p$; the
-        gradient, moment estimates, bias corrections, step size, and (zero) weight decay are the same
-        throughout. The pooling step in blue is the only inter-factor cross-talk, and it is precisely
-        what makes the update equivariant at $p{=}0$: by pooling $\hat v$ over all entries of both
-        factors, $\bar s$ depends only on $\|G_U\|_F^2 + \|G_V\|_F^2$, which is gauge-invariant.
-        Setting $p{=}1$ recovers standard Adam.
-      </figcaption>
-    </figure>
-  </div>
-</section>
-
-<section class="section" style="padding-top:0">
-  <div class="container is-max-desktop">
-    <figure class="fig">
-      <div class="fig-frame">
-        <img src="static/dial.svg" alt="Effective rank of the solution falling monotonically as the dial parameter p decreases from 1 to 0, approaching gradient descent's value.">
-      </div>
-      <figcaption>
-        <b>Anisotropy is the cause, not a correlate.</b> As the preconditioner changes shape from
-        coordinate-wise ($p{=}1$) toward isotropic ($p{=}0$), recovery and effective rank improve
-        monotonically toward gradient descent's. Adaptivity and momentum are held fixed. An envelope
-        arm (learning rate re-optimized at each $p$) and a fixed-step arm agree closely, which is what
-        pins the effect on anisotropy rather than on step-size rescaling. The same anisotropy is what
-        buys Adam its speed: $p{=}0$ needs roughly eight times as many steps to interpolate.
-      </figcaption>
-    </figure>
-  </div>
-</section>
-
-<hr class="sep">
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">Inside the equivariant class</h2>
-    <figure class="fig">
-      <div class="fig-frame">
-        <img src="static/phase_diagram.svg" alt="Recovery error versus tail-amplitude parameter tau for Adam, GD, Shampoo and Muon over ten seeds. Muon is exact at tau equals zero and crosses above GD near tau equals 0.2. Adam is worst at every tau.">
-      </div>
-      <figcaption>
-        <b>A second axis: the spectral schedule.</b> Equivariance is necessary, not sufficient. Within
-        the equivariant class, Muon's equal-rate schedule is exact at $\tau{=}0$ and cedes to GD near
-        $\tau^\ast \approx 0.2$, about $4\%$ tail energy. This reconciles &ldquo;Muon recovers
-        exactly&rdquo; with &ldquo;Muon removes the simplicity bias&rdquo; &mdash; two readings of one
-        schedule at different points on the same axis. Bands are $\pm1$ s.d. over ten seeds.
-      </figcaption>
-    </figure>
-  </div>
-</section>
-
-<hr class="sep">
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">Real data at matched training loss</h2>
-    <figure class="fig">
-      <div class="fig-frame">
-        <img src="static/realdata_trajectory.svg" alt="Two panels plotting held-out error and effective rank against training loss on Indian Pines. GD sits below Adam at every matched training loss; Adam's effective rank climbs to 28 while GD settles between 5.6 and 13.2.">
-      </div>
-      <figcaption>
-        <b>Gradient descent cuts held-out error by $43$&ndash;$44\%$.</b> Two hyperspectral
-        image-completion benchmarks, four seeds, learning rates chosen by a train-only criterion. The
-        optimizers are compared only at <em>equal</em> training loss, so no fitted run is ever set
-        against an unfitted one. GD settles at effective rank $5.6$&ndash;$13.2$; Adam climbs to $28$
-        against the scene's intrinsic rank of $24$.
-      </figcaption>
-    </figure>
-  </div>
-</section>
-
-<hr class="sep">
-
-<section class="section" id="bibtex">
-  <div class="container is-max-desktop">
-    <h2 class="title is-3 has-text-centered">BibTeX</h2>
-    <pre class="bib">@article{singh2026lossbasis,
-  title         = {The Loss Does Not See the Basis, but Adam Does},
-  author        = {Singh, Devender},
-  year          = {2026},
-  eprint        = {2608.05136},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.LG},
-  url           = {https://arxiv.org/abs/2608.05136}
-}</pre>
-  </div>
-</section>
-
-<section class="section has-text-centered" style="padding-top:0">
-  <div class="container is-max-desktop">
-    <p class="contactline">
-      Send feedback and questions to
-      <a href="mailto:devenders@mun.ca">devenders@mun.ca</a> &mdash; Devender Singh.
+    <p>
+      Before this work I was a research intern at Memorial's
+      <a href="https://vaclab.ca">Visual and Analytic Computing Lab</a>, advised by
+      <a href="https://www.cs.mun.ca/~mhamilton/">Matthew Hamilton</a> and
+      <a href="https://www.cs.mun.ca/~vpradodafons/">Vinicius Prado da Fonseca</a>, who also
+      supervised my Honours and Mitacs research, carried out in collaboration with
+      <a href="https://www.compusult.com/">Compusult Ltd.</a> Earlier I held a Summer Undergraduate
+      Research Award (SURA) at Memorial, working on light-field display simulation and rendering.
+      On the industry side I have worked as a software developer at Verlo, an AI startup in
+      St. John's.
     </p>
-  </div>
-</section>
+    <p>
+      I am applying to PhD programs. If my work is close to yours, I would genuinely like to hear
+      from you — <a href="mailto:devenders@mun.ca">devenders@mun.ca</a>.
+    </p>
+  </section>
 
-<footer class="footer">
-  <div class="container is-max-desktop">
-    <div class="columns">
-      <div class="column">
-        <div class="content">
-          <p class="is-size-7">
-            <b>Acknowledgments.</b> I thank Tarun Sheel for the collaboration on FlowAdam that
-            motivated this line of work, and for his support. This research was enabled in part by
-            computing resources provided by ACENET and the Digital Research Alliance of Canada
-            (the Nibi cluster).
-          </p>
-        </div>
-      </div>
-      <div class="column">
-        <div class="content">
-          <p class="is-size-7">
-            <b>Reproducibility.</b> The mechanism experiments run on CPU in minutes; only the H100
-            replication ladder and the larger attention twins need a GPU. Code, seeds, and every
-            control condition are at
-            <a href="https://github.com/idevender/loss-basis-adam">github.com/idevender/loss-basis-adam</a>.
-          </p>
-          <p class="is-size-7 has-text-grey">
-            Page built on the
-            <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> project page template.
-          </p>
-        </div>
+  <hr>
+
+  <section id="news">
+    <h2>News</h2>
+    <div class="news">
+      <div><span class="date">08/2026:</span>
+        <em>The Loss Does Not See the Basis, but Adam Does</em> is on arXiv as
+        <a href="https://arxiv.org/abs/2608.05136">arXiv:2608.05136</a>, with
+        <a href="https://github.com/idevender/loss-basis-adam">code</a> and a
+        <a href="loss-basis-adam/">project page</a>.
       </div>
     </div>
-  </div>
-</footer>
+  </section>
 
-<script>
-(function(){
-  var root = document.documentElement, btn = document.getElementById('themebtn');
-  function icon(){
-    var dark = root.getAttribute('data-theme') === 'dark';
-    btn.innerHTML = dark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-  }
-  icon();
-  btn.addEventListener('click', function(){
-    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    try { localStorage.setItem('theme', next); } catch(e){}
-    icon();
-  });
-})();
-</script>
+  <hr>
+
+  <section id="publications">
+    <h2>Publications</h2>
+    <div class="pub">
+      <span class="title">The Loss Does Not See the Basis, but Adam Does</span>
+      <span class="meta">Devender Singh. Preprint, 2026.</span>
+      <div class="links">
+        <a href="https://arxiv.org/abs/2608.05136">arXiv</a>
+        <a href="loss-basis-adam/static/loss-basis-adam.pdf">PDF</a>
+        <a href="https://github.com/idevender/loss-basis-adam">Code</a>
+        <a href="loss-basis-adam/">Project page</a>
+      </div>
+    </div>
+    <div class="pub">
+      <span class="title">FlowAdam: Implicit Regularization via Geometry-Aware Soft Momentum Injection</span>
+      <span class="meta">Devender Singh, Tarun Sheel.
+        In <em>Proceedings of IJCNN 2026</em> (IEEE WCCI).
+        <strong>Oral presentation, main track.</strong></span>
+      <div class="links">
+        <a href="https://arxiv.org/abs/2604.06652">arXiv</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vita: kept out of the page until the CV PDF exists. To switch it on, uncomment this
+       section and the Vita link in the nav above, and drop the file at assets/cv.pdf.
+  <hr>
+
+  <!-- Vita section hidden until assets/cv.pdf exists
+  <section id="vita">
+    <h2>Vita</h2>
+    <p><a href="assets/cv.pdf">Curriculum vitae</a> (PDF).</p>
+  </section>
+  -->
+  -->
+
+
+  <footer>
+    St. John's, Newfoundland &amp; Labrador, Canada.
+  </footer>
+
+</div>
+
 </body>
 </html>
