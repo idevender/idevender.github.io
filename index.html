@@ -10,7 +10,9 @@
 <meta property="og:title" content="Devender Singh">
 <meta property="og:description" content="Honours CS undergraduate at Memorial University of Newfoundland. Optimization for machine learning: symmetry, implicit bias, and which solutions an optimizer selects.">
 <meta property="og:url" content="https://idevender.github.io/">
+<meta property="og:image" content="https://idevender.github.io/assets/devender.jpg">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://idevender.github.io/assets/devender.jpg">
 <meta name="twitter:title" content="Devender Singh">
 <meta name="twitter:description" content="Honours CS undergraduate at Memorial University of Newfoundland. Optimization for machine learning.">
 
@@ -18,6 +20,7 @@
 
 <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 
 <style>
   :root {
@@ -74,9 +77,10 @@
   }
 
   .who p {
-    margin: 0 0 .2rem;
+    margin: 0 0 .1rem;
     font-weight: 300;
     font-size: 1.06rem;
+    line-height: 1.5;
     color: var(--ink);
   }
 
@@ -106,8 +110,9 @@
     letter-spacing: 2.4px;
     text-transform: uppercase;
   }
-  nav a { color: var(--ink); }
+  nav a { color: var(--ink); transition: color .15s ease; }
   nav a:hover { color: var(--link); text-decoration: none; }
+  nav a.active { color: var(--link); }
 
   /* ---------- sections ---------- */
 
@@ -143,7 +148,12 @@
     border-top: 1px solid var(--rule);
     font-size: .87rem;
     color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 2rem;
+    justify-content: space-between;
   }
+  footer .credit { color: var(--muted); }
 
   /* ---------- mobile ---------- */
 
@@ -173,7 +183,9 @@
         <a href="https://x.com/devendertwr" title="X" aria-label="X"><i class="fab fa-x-twitter"></i></a>
         <a href="https://www.linkedin.com/in/idevender" title="LinkedIn" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
         <a href="https://github.com/idevender" title="GitHub" aria-label="GitHub"><i class="fab fa-github"></i></a>
-        <a href="mailto:devenders@mun.ca" title="Email" aria-label="Email"><i class="fas fa-envelope"></i></a>
+        <!-- Google Scholar: paste your profile URL in the href and delete this comment wrapper.
+        <a href="SCHOLAR_URL_HERE" title="Google Scholar" aria-label="Google Scholar"><i class="ai ai-google-scholar"></i></a>
+        -->
       </div>
     </div>
   </header>
@@ -231,6 +243,14 @@
         <a href="https://github.com/idevender/loss-basis-adam">code</a> and a
         <a href="loss-basis-adam/">project page</a>.
       </div>
+      <div><span class="date">06/2026:</span>
+        Presented <em>FlowAdam</em> as an oral in the main track of IJCNN 2026,
+        held at IEEE WCCI in June.
+      </div>
+      <div><span class="date">04/2026:</span>
+        <em>FlowAdam: Implicit Regularization via Geometry-Aware Soft Momentum Injection</em>
+        is on arXiv as <a href="https://arxiv.org/abs/2604.06652">arXiv:2604.06652</a>.
+      </div>
     </div>
   </section>
 
@@ -259,24 +279,47 @@
     </div>
   </section>
 
-  <!-- Vita: kept out of the page until the CV PDF exists. To switch it on, uncomment this
-       section and the Vita link in the nav above, and drop the file at assets/cv.pdf.
-  <hr>
-
-  <!-- Vita section hidden until assets/cv.pdf exists
-  <section id="vita">
-    <h2>Vita</h2>
-    <p><a href="assets/cv.pdf">Curriculum vitae</a> (PDF).</p>
-  </section>
+  <!-- Vita is off until a CV exists. To switch it on: drop the file at assets/cv.pdf,
+       uncomment the Vita link in the nav above, and uncomment the block below.
+       (Do not nest comment markers - HTML comments cannot nest.)
+       <hr>
+       <section id="vita">
+         <h2>Vita</h2>
+         <p><a href="assets/cv.pdf">Curriculum vitae</a> (PDF).</p>
+       </section>
   -->
-  -->
-
 
   <footer>
-    St. John's, Newfoundland &amp; Labrador, Canada.
+    <div>St. John's, Newfoundland &amp; Labrador, Canada.</div>
+    <div class="credit">
+      Based on the template by
+      <a href="https://martinsaveski.com/">Martin Saveski</a>.
+    </div>
   </footer>
 
 </div>
 
+<script>
+// Highlight the nav item for whichever section is currently in view.
+(function () {
+  var links = [].slice.call(document.querySelectorAll('nav a[href^="#"]'));
+  var sections = links
+    .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+    .filter(Boolean);
+  if (!sections.length) return;
+
+  function sync() {
+    var line = window.scrollY + window.innerHeight * 0.3;
+    var current = 0;
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].offsetTop <= line) current = i;
+    }
+    links.forEach(function (a, i) { a.classList.toggle('active', i === current); });
+  }
+  window.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
+})();
+</script>
 </body>
 </html>
