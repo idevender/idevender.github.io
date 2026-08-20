@@ -18,26 +18,56 @@
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23147db8'/%3E%3Cpath d='M22 70 L50 30 L78 70' stroke='white' stroke-width='9' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
+<script>
+(function () { // set the theme before first paint, so there is no flash
+  try {
+    var t = localStorage.getItem('theme');
+    if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+})();
+</script>
+
 <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
 
 <style>
+  /* Light is the default; dark redefines the same tokens, so nothing below
+     needs to know which theme is running. Palette matches the project page. */
   :root {
     --ink: #2c2c2c;
     --muted: #6b6b6b;
     --link: #147db8;
     --rule: #e2e2e2;
+    --bg: #ffffff;
+    --btn-bg: #ffffff;
+    --btn-rule: #dbdbdb;
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
+    --ink: #d5dae2;
+    --muted: #8e98a6;
+    --link: #6cb6e8;
+    --rule: #262c36;
+    --bg: #12151a;
+    --btn-bg: #1b2029;
+    --btn-rule: #2e3644;
+    color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
+
+  html { background: var(--bg); }
 
   body {
     margin: 0;
     font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 400;
     color: var(--ink);
-    background: #fff;
+    background: var(--bg);
+    transition: background-color .2s ease, color .2s ease;
     line-height: 1.62;
     -webkit-font-smoothing: antialiased;
   }
@@ -69,24 +99,27 @@
   }
 
   .who h1 {
-    font-size: 3.05rem;
+    font-size: 2.6rem;
     font-weight: 300;
-    letter-spacing: -0.5px;
-    margin: 0 0 .4rem;
+    letter-spacing: -0.4px;
+    margin: 0 0 .55rem;
     line-height: 1.05;
+    /* Raleway's left side bearing scales with the type size, so at this size the
+       D sits ~2px right of the lines below. Pull it back to align the ink. */
+    margin-left: -0.045em;
   }
 
   /* Matches the density of the source template: smaller, normal weight, tight leading. */
   .who p {
     margin: 0;
     font-weight: 400;
-    font-size: .95rem;
-    line-height: 1.42;
+    font-size: 1.02rem;
+    line-height: 1.5;
     color: var(--ink);
   }
 
   .icons {
-    margin-top: .5rem;
+    margin-top: .65rem;
     display: flex;
     gap: .7rem;
     font-size: 1.12rem;
@@ -161,6 +194,20 @@
 
   .note { color: var(--muted); }
 
+  /* ---------- theme toggle ---------- */
+
+  #themebtn {
+    position: fixed; top: 1rem; right: 1rem; z-index: 60;
+    width: 2.4rem; height: 2.4rem; border-radius: 50%;
+    border: 1px solid var(--btn-rule);
+    background: var(--btn-bg);
+    color: var(--ink);
+    cursor: pointer; font-size: .95rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+  }
+  #themebtn:hover { border-color: var(--link); color: var(--link); }
+
   footer {
     margin-top: 3.5rem;
     padding-top: 1.6rem;
@@ -180,7 +227,7 @@
     .wrap { padding: 2.5rem 1.25rem 3.5rem; }
     .masthead { flex-direction: column; text-align: center; gap: 1.5rem; }
     .portrait { width: 165px; height: 165px; }
-    .who h1 { font-size: 2.3rem; }
+    .who h1 { font-size: 2.15rem; margin-left: 0; }
     .icons { justify-content: center; }
     nav { gap: 1.5rem; justify-content: center; }
     h2 { font-size: 1.8rem; }
@@ -188,6 +235,8 @@
 </style>
 </head>
 <body>
+
+<button id="themebtn" aria-label="Toggle dark mode" title="Toggle dark mode"><i class="fas fa-moon"></i></button>
 
 <div class="wrap">
 
@@ -256,6 +305,13 @@
     <h2>News</h2>
     <div class="news">
       <div><span class="date">08/2026:</span>
+        The preprint from my Mitacs project with
+        <a href="https://www.compusult.com/">Compusult Ltd.</a>,
+        <em>Terrain-Aware Local Path Planning with Global DEM Data Integration for Autonomous
+        UGV Navigation</em>, is public on arXiv as
+        <a href="https://arxiv.org/abs/2608.17038">arXiv:2608.17038</a>.
+      </div>
+      <div><span class="date">08/2026:</span>
         <em>The Loss Does Not See the Basis, but Adam Does</em> is on arXiv as
         <a href="https://arxiv.org/abs/2608.05136">arXiv:2608.05136</a>, with
         <a href="https://github.com/idevender/loss-basis-adam">code</a> and a
@@ -295,6 +351,22 @@
       </div>
     </div>
     <div class="pub">
+      <a class="figlink" href="https://arxiv.org/abs/2608.17038">
+        <img class="fig" src="assets/thumb-ugv-dem.png"
+             alt="Point-cloud view of the UGV in simulation: LiDAR returns in blue across the ground and in red on the surrounding obstacles, with a green marker for the local goal ahead of the vehicle.">
+      </a>
+      <div class="body">
+        <span class="title">Terrain-Aware Local Path Planning with Global DEM Data Integration
+          for Autonomous UGV Navigation</span>
+        <span class="meta">Devender Singh, Issah Nazif Suleiman, Paul Mitten, Glenn Cutler,
+          Vinicius Prado da Fonseca, Matthew Hamilton. Preprint, 2026.</span>
+        <div class="links">
+          <a href="https://arxiv.org/abs/2608.17038">arXiv</a>
+          <a href="https://arxiv.org/pdf/2608.17038">PDF</a>
+        </div>
+      </div>
+    </div>
+    <div class="pub">
       <a class="figlink" href="https://arxiv.org/abs/2604.06652">
         <img class="fig" src="assets/thumb-flowadam.png"
              alt="Accuracy against training steps for Adam, hard injection, and FlowAdam; FlowAdam rises smoothly while hard injection oscillates.">
@@ -330,6 +402,25 @@
   </footer>
 
 </div>
+
+<script>
+// Theme toggle. Shares the 'theme' key with the project page, so the choice carries over.
+(function () {
+  var root = document.documentElement, btn = document.getElementById('themebtn');
+  function icon() {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = dark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+  }
+  icon();
+  btn.addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    icon();
+  });
+})();
+</script>
 
 <script>
 // Highlight the nav item for whichever section is currently in view.
